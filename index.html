@@ -15,7 +15,7 @@
     <script>
       
     let interval = null;
-    let dbMonnitor = null;
+    let dbMonitor = null;
 
     async function startMonitoring(e) {
       e.preventDefault();
@@ -27,7 +27,7 @@
       if(interval){
         return;
       }
-      
+
       await dbMonitor.connectMic();
 
       interval = setInterval(function() {
@@ -41,6 +41,8 @@
       e.preventDefault();
 
       clearInterval(interval);
+      interval = null;
+      
       dbMonitor.disconnectMic();
 
       document.getElementById('dbContainer').innerHTML = '-';

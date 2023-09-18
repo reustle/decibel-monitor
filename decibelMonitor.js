@@ -1,4 +1,6 @@
 class DecibelMonitor {
+  // TODO  The ScriptProcessorNode is deprecated.
+  // Use AudioWorkletNode instead. (https://bit.ly/audio-worklet)
 
   constructor() {
     // When we create an instance of the class, we set some class-wide variables
