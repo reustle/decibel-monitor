@@ -18,6 +18,11 @@ class DecibelMonitor {
     // and starts processing the audio input. It doesn't return anything. 
     // If it fails to connect to the microphone, it alerts the user and logs the error.
 
+    if(this.isConnected) {
+      console.error('ERROR: Cannot connect to microphone because it is already connected.');
+      return;
+    }
+
     try {
       this.audioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
 

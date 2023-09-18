@@ -19,8 +19,15 @@
 
     async function startMonitoring(e) {
       e.preventDefault();
+
+      if(!dbMonitor){
+        dbMonitor = new DecibelMonitor();
+      }
+
+      if(interval){
+        return;
+      }
       
-      dbMonitor = new DecibelMonitor();
       await dbMonitor.connectMic();
 
       interval = setInterval(function() {
