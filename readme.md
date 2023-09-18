@@ -9,7 +9,7 @@ Heavily inspired by https://github.com/takispig/db-meter
 
 ### Usage
 
-```
+```js
 // Initialize
 let dbMonitor = new DecibelMonitor();
 
