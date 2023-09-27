@@ -11,7 +11,9 @@ Heavily inspired by https://github.com/takispig/db-meter
 
 ```js
 // Initialize
-let dbMonitor = new DecibelMonitor();
+let dbMonitor = new DecibelMonitor({
+  sampleWindow: 5000 // Optional: How long to sample the volume for. Default is 2000
+});
 
 // Connect to the microphone
 dbMonitor.connectMic();

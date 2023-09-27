@@ -1,5 +1,13 @@
 <html>
   <head>
+    <title>decibel-monitor</title>
+    <style>
+body {
+  margin: 20px;
+  padding: 20px;
+  font-family: sans-serif;
+}
+    </style>
   </head>
   <body>
     <div>
@@ -7,7 +15,7 @@
     </div>
 
     <div id="actionContainer">
-      <a href="#" id="btnStartMonitoring">Start monitoring</a>
+      <a href="#" id="btnStartMonitoring">Start monitoring</a><br/>
       <a href="#" id="btnStopMonitoring">Stop monitoring</a>
     </div>
 
@@ -21,7 +29,9 @@
       e.preventDefault();
 
       if(!dbMonitor){
-        dbMonitor = new DecibelMonitor();
+        dbMonitor = new DecibelMonitor({
+          sampleWindow: 1000
+        });
       }
 
       if(interval){
@@ -33,7 +43,6 @@
       interval = setInterval(function() {
         let vol = dbMonitor.getVolume();
         document.getElementById('dbContainer').innerHTML = vol;
-        console.log(vol);
       }, 1000);
     }
 

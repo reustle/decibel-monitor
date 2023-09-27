@@ -2,17 +2,19 @@ class DecibelMonitor {
   // TODO  The ScriptProcessorNode is deprecated.
   // Use AudioWorkletNode instead. (https://bit.ly/audio-worklet)
 
-  constructor() {
+  constructor(options = {}) {
     // When we create an instance of the class, we set some class-wide variables
 
-    this.localDbValues = []; // Array to store db values for each loop within the refresh_rate
-    this.refresh_rate = 500; // How often we 
+    this.localDbValues = []; // Array to store db values for each loop
     this.offset = 0; // Offset to add to the RMS value (in DB)
     this.analyser = null;
     this.audioSource = null;
     this.processor = null;
     this.audioStream = null;
     this.isConnected = false;
+    this.readingsPerSecond = 25; // This is roughly how many readings are happening per second, used to calc avg
+    this.sampleWindow = options?.sampleWindow || 2000; // How long should we sample for. Default 2sec
+    this.sampleReadingsCount = (this.sampleWindow/1000) * this.readingsPerSecond;
   }
 
   async connectMic() {
@@ -75,10 +77,10 @@ class DecibelMonitor {
 
     const maxFrequency = 120;
     for (let i = 0; i < data.length; i++) {
-      if (data[i]>maxFrequency){
+      if (data[i] > maxFrequency){
         data[i] = maxFrequency;
       }
-      rms += data[i]*data[i];
+      rms += data[i] * data[i];
     }
 
     rms = Math.sqrt(rms / data.length);
@@ -88,6 +90,12 @@ class DecibelMonitor {
     let value = rms + this.offset;
     // Push the value to the localDbValues array
     this.localDbValues.push(value);
+
+    // Make sure the localDbValues array is at most double the length of this.sampleReadingsCount
+    if (this.localDbValues.length > (this.sampleReadingsCount * 2)) {
+      this.localDbValues = this.localDbValues.slice(-1 * (this.sampleReadingsCount*2));
+    }
+
   }
 
   disconnectMic() {
@@ -130,17 +138,18 @@ class DecibelMonitor {
       return 0;
     }
 
+    // Grab the last X elements of the localDbValues array,
+    // where X is (this.sampleWindow/1000) * this.readingsPerSecond
+    let slicedDbValues = this.localDbValues.slice(-1 * this.sampleReadingsCount); // The last X elements of the array
+
     // Calculate the average of the localDbValues array
-    let volume = Math.round(this.localDbValues.reduce((a,b) => a+b) / this.localDbValues.length);
+    let volume = Math.round(slicedDbValues.reduce((a,b) => a+b) / slicedDbValues.length);
 
     // We don't want/need negative decibels in that case
     if(!isFinite(volume)) {
       volume = 0;
     }
     
-    // Clear the localDbValues array
-    this.localDbValues = [];
-
     return volume;
   }
 }
